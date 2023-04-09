@@ -1,6 +1,9 @@
 # gpt-text-adventure
 > Play AI generated text adventure games.
 
+Endless text adventure games.
+Most of them aren't that good, and you'll be lucky if one ever finishes.
+
 ## Installation
 
 Clone the repo:
