@@ -2,7 +2,10 @@ import json
 
 from .openai_client import openai, model
 
-_PROMPT_BASE = """You are a game text adventure game architect. Your job is to provide the primary story points for a game.
+_messages = [
+    {
+        "role": "system",
+        "content": """You are a game text adventure game architect. Your job is to provide the primary story points for a game.
 
 You will be given a JOSN object containing information about a game. Provide a JSON response containing an array of 4 to 6 story points in chronological order that carry out the objective of the game.
 
@@ -11,16 +14,20 @@ Each story point must contain:
 - An id starting with 1 and indicating the order of the story point
 - A list of chracters that the player may interact with during the story point
 - The story point's objective (i.e., find an item needed, learn required information, solve a puzzle, battle an enemy, etc.)
-- A location
-
-Here are some samples:
-{
+- A location"""
+    },
+    {
+        "role": "user",
+        "content": """{
 "THEME": "Space Odyssey",
 "THEME DESCRIPTION": "Explore the vast expanse of space, encounter alien civilizations, and unravel the mysteries of the universe",
 "TITLE": "Odyssey Beyond the Stars",
 "TITLE DESCRIPTION": "As captain of the starship Aurora, embark on an epic journey through the galaxy to uncover the secrets of a long-lost alien civilization. Encounter strange new worlds, make alliances with alien species, and overcome incredible challenges in your quest to unlock the secrets of the universe and save humanity from a looming threat."
-}
-[
+}"""
+    },
+    {
+        "role": "assistant",
+        "content": """[
     {
         "id": 1,
         "title": "The Galactic Mission",
@@ -63,16 +70,20 @@ Here are some samples:
         "objective": "Lead the united forces in a climactic battle to save Earth and ensure the survival of humanity.",
         "location": "Space battle around Earth"
     }
-]
-
-
-{
+]"""
+    },
+    {
+        "role": "user",
+        "content": """{
 "THEME": "Fantasy Adventure",
 "THEME DESCRIPTION": "Embark on a journey through a magical realm filled with mythical creatures, ancient ruins, and powerful magic.",
 "TITLE": "The Quest for the Crystal Heart",
 "TITLE DESCRIPTION": "As a young adventurer, you are tasked with finding the legendary Crystal Heart, a powerful artifact that has been lost for centuries. With the help of your trusty companions, you must navigate treacherous terrain, battle fierce monsters, and solve challenging puzzles to uncover the secrets of the Crystal Heart and save the realm from darkness."
-}
-[
+}"""
+    },
+    {
+        "role": "assistant",
+        "content": """[
 {
 "id": 1,
 "title": "The Call to Adventure",
@@ -115,19 +126,15 @@ Here are some samples:
 "objective": "Return the Crystal Heart to its rightful place, restore balance to the realm, and save it from darkness.",
 "location": "Village"
 }
+]"""
+    }
 ]
 
-"""
 
-
-def generate_story_points(game_info):
-    prompt = _PROMPT_BASE + json.dumps(game_info)
-    response = openai.Completion.create(
-        engine=model,
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=2096,
-        top_p=1,
+def generate_story(game_info):
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=_messages + [{"role": "user", "content": f"{game_info}"}]
     )
-    text = response.choices[0].text
+    text = response['choices'][0]['message']['content']
     return json.loads(text)

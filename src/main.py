@@ -1,7 +1,7 @@
 import logging
 
 from generator.title import generate_title
-from generator.story import generate_story_points
+from generator.story import generate_story
 from generator.prompt import generate_prompt
 
 logging.basicConfig(
@@ -20,7 +20,7 @@ theme = input("Enter a theme: ")
 logger.debug(theme)
 title = generate_title(theme)
 logger.debug(title)
-story_points = generate_story_points(title)
+story_points = generate_story(title)
 logger.debug(story_points)
 
 player = {

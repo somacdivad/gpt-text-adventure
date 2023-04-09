@@ -2,8 +2,10 @@ import json
 
 from .openai_client import openai, model
 
-_PROMPT_BASE = """
-You are a title generator for the text adventure game.
+_messages = [
+    {
+        "role": "system",
+        "content": """You are a title and description generator for the text adventure game.
 
 Titles must:
 - Be 4 to 8 words long
@@ -20,10 +22,36 @@ You can accept some simple commands:
 - generate [n]: generate n titles
 - generate [theme] [n]: generate n titles with the provided theme
 
-All responses should be formatted as JSON. Here are some examples:
-
-generate 4
-[
+All responses should be formatted as JSON."""
+    },
+    {
+        "role": "user",
+        "content": "generate 'time travel adventure' 2"
+    },
+    {
+        "role": "assistant",
+        "content": """[
+{
+"THEME": "Time Travel Adventure",
+"THEME DESCRIPTION": "Experience the thrill of ancient civilizations, battle legendary foes, and uncover lost artifacts",
+"TITLE": "The Sands of Destiny",
+"TITLE DESCRIPTION": "As the time-traveling archaeologist Alexandria, embark on a journey to unravel the mysteries of ancient civilizations. Battle mythological creatures, solve ancient puzzles, and uncover powerful artifacts to rewrite history and prevent a looming catastrophe."
+},
+{
+"THEME": "Time Travel Adventure",
+"THEME DESCRIPTION": "Unravel the mysteries of the future, navigate dystopian landscapes, and fight for the survival of humanity",
+"TITLE": "Future Tides: The Chrono Resistance",
+"TITLE DESCRIPTION": "As the courageous freedom fighter Zane, travel to a dystopian future where humanity stands on the brink of extinction. Uncover the secrets behind the collapse of society, forge alliances with rebels, and battle a ruthless regime to restore hope and save the future of humanity."
+}
+]"""},
+    {
+        "role": "user",
+        "content": "generate 4"
+    },
+    {
+        "role": "assistant",
+        "content": """[
+    }
 {
 "THEME": "Fantasy Adventure",
 "THEME DESCRIPTION": "Embark on a quest in a magical world, overcome challenges, and face mythical creatures",
@@ -48,44 +76,22 @@ generate 4
 "TITLE": "Echoes of Desolation",
 "TITLE DESCRIPTION": "As the lone survivor of a doomed expedition, explore the ruins of an abandoned research facility on a desolate island. Survive against the horrors that lurk in the shadows, scavenge for supplies, and uncover the sinister secrets that led to the downfall of the facility and its inhabitants."
 }
+]"""},
+    {
+        "role": "user",
+        "content": "generate “time travel adventure” 2"
+    },
+    {
+        "role": "assistant",
+        "content": ""
+    }
 ]
-
-generate “time travel adventure” 2
-[
-{
-"THEME": "Time Travel Adventure",
-"THEME DESCRIPTION": "Experience the thrill of ancient civilizations, battle legendary foes, and uncover lost artifacts",
-"TITLE": "The Sands of Destiny",
-"TITLE DESCRIPTION": "As the time-traveling archaeologist Alexandria, embark on a journey to unravel the mysteries of ancient civilizations. Battle mythological creatures, solve ancient puzzles, and uncover powerful artifacts to rewrite history and prevent a looming catastrophe."
-},
-{
-"THEME": "Time Travel Adventure",
-"THEME DESCRIPTION": "Unravel the mysteries of the future, navigate dystopian landscapes, and fight for the survival of humanity",
-"TITLE": "Future Tides: The Chrono Resistance",
-"TITLE DESCRIPTION": "As the courageous freedom fighter Zane, travel to a dystopian future where humanity stands on the brink of extinction. Uncover the secrets behind the collapse of society, forge alliances with rebels, and battle a ruthless regime to restore hope and save the future of humanity."
-}
-]
-
-generate “Lies and Deception” 1
-[
-{
-"THEME": "Lies and Deception",
-"THEME DESCRIPTION": "Navigate a world of intrigue, uncover hidden truths, and outwit your enemies",
-"TITLE": "Whispers in the Shadows",
-"TITLE DESCRIPTION": "As the skilled investigator Marlowe, delve into a world of secrets and intrigue in a city filled with corruption. Unravel a web of lies, use your cunning to outsmart your enemies, and uncover the truth behind a series of mysterious disappearances that threaten to destabilize the city."
-}
-]
-
-generate"""
 
 
 def generate_title(theme: str):
-    _prompt = _PROMPT_BASE + f'"{theme}" 1'
-    response = openai.Completion.create(
-        engine=model,
-        prompt=_prompt,
-        temperature=0.7,
-        max_tokens=512,
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=_messages + [{"role": "user", "content": f"generate '{theme}' 1"}],
     )
-    text = response.choices[0].text
+    text = response['choices'][0]['message']['content']
     return json.loads(text)[0]
