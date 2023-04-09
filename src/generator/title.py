@@ -79,11 +79,16 @@ All responses should be formatted as JSON."""
 ]"""},
     {
         "role": "user",
-        "content": "generate “time travel adventure” 2"
+        "content": "generate 'Lies and Deception' 1"
     },
     {
         "role": "assistant",
-        "content": ""
+        "content": """{
+"THEME": "Lies and Deception",
+"THEME DESCRIPTION": "Navigate a world of intrigue, uncover hidden truths, and outwit your enemies",
+"TITLE": "Whispers in the Shadows",
+"TITLE DESCRIPTION": "As the skilled investigator Marlowe, delve into a world of secrets and intrigue in a city filled with corruption. Unravel a web of lies, use your cunning to outsmart your enemies, and uncover the truth behind a series of mysterious disappearances that threaten to destabilize the city."
+}"""
     }
 ]
 
@@ -94,4 +99,4 @@ def generate_title(theme: str):
         messages=_messages + [{"role": "user", "content": f"generate '{theme}' 1"}],
     )
     text = response['choices'][0]['message']['content']
-    return json.loads(text)[0]
+    return json.loads(text)
