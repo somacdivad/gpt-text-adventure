@@ -1,10 +1,11 @@
 # gpt-text-adventure
-> Play AI generated text adventure games.
-
-![A sample run with the "Space Odyssey" theme](space-odyssey.png)
+> Play AI-generated text adventure games.
 
 Endless text adventure games.
 Most of them aren't that good, and you'll be lucky if one ever finishes.
+Also, things break unexpectedly, sometimes.
+
+![A sample run with the "Space Odyssey" theme](space-odyssey.png)
 
 ## Installation
 
@@ -44,4 +45,6 @@ Enter a theme when you are prompted. Some examples of themes are:
 3. Space Odyssey
 4. Ancient Curse
 
-From then on, just enter the number of the choice you select at each prompt until the game completes.
+From then on, just enter the number of the choice you select at each prompt until the game completes (it probably won't).
+
+Good luck!
