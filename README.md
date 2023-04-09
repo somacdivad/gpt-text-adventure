@@ -3,7 +3,11 @@
 
 ## Installation
 
-Clone the repo.
+Clone the repo:
+
+```sh
+$ git clone https://github.com/somacdivad/gpt-text-adventure.git
+```
 
 Copy the `.env` file:
 
@@ -13,6 +17,12 @@ $ cp .env.example .env
 ```
 
 Open the `.env` file and add your OpenAI API key.
+
+Install the requirements:
+
+```sh
+$ python -m pip install -r requirements.txt
+```
 
 ## Playing the game
 
