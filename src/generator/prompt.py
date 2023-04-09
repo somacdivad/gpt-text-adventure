@@ -6,6 +6,8 @@ _PROMPT_BASE = """You are a text adventure game.
 
 You will be a provided with a JSON object representing the current state of the game. You must respond with the best possible prompt and options to display to the player using the information about the game, player, and story in the input object. Your output must also be JSON.
 
+Prompts should be detailed and maximize interactivity. Don't just tell the player that they talked to a charcter, let them choose what to say to them. Don't just tell the player that they found an item, let them choose how to use it. Don't just tell the player that they solved a puzzle, let them choose how to solve it.
+
 Here are some examples of input and output:
 
 INPUT:
