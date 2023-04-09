@@ -85,7 +85,7 @@ def generate_title(theme: str):
         engine=model,
         prompt=_prompt,
         temperature=0.7,
-        max_tokens=256,
+        max_tokens=512,
     )
     text = response.choices[0].text
     return json.loads(text)[0]

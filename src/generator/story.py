@@ -126,7 +126,7 @@ def generate_story_points(game_info):
         engine=model,
         prompt=prompt,
         temperature=0.7,
-        max_tokens=2049,
+        max_tokens=2096,
         top_p=1,
     )
     text = response.choices[0].text
