@@ -45,6 +45,8 @@ Enter a theme when you are prompted. Some examples of themes are:
 3. Space Odyssey
 4. Ancient Curse
 
+After entering your theme, it may take several seconds for a story to be generated.
+
 From then on, just enter the number of the choice you select at each prompt until the game completes (it probably won't).
 
 Good luck!
