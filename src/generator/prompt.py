@@ -20,7 +20,7 @@ Prompts should be directly related to the current state of the game.
 Use the `progess` attribute to determine which section of the story the player is currently in.
 The `progress` starts at 0 and only increases once the player has completed the objective of the current story point.
 
-Prompts should continue from the contents of `prev_prompt` and be appropriate for the `selected` option the player from `prev_options`.
+Prompts should continue from the contents of `prev_prompt` and be appropriate for the `selected` option.
 
 Prompts should be detailed and maximize interactivity.
 Don't just tell the player that they talked to a character, let them choose what to say to them.

@@ -44,5 +44,5 @@ while player["progress"] < len(story_points):
     print()
     choice = int(input("Enter your choice: "))
     print()
-    prev_prompt = {"text": prompt["text"], "options": prompt["options"], "selected": choice}
+    prev_prompt = {"text": prompt["text"], "options": prompt["options"], "selected": prompt["options"][choice - 1]}
     prompt = generate_prompt(title, story_points, player, prev_prompt)
