@@ -2,10 +2,12 @@
 > Play AI-generated text adventure games.
 
 Endless text adventure games.
+You give it a theme, and AI does the rest.
+
 Most of them aren't that good, and you'll be lucky if one ever finishes.
 Also, things break unexpectedly, sometimes.
 
-![A sample run with the "Space Odyssey" theme](space-odyssey.png)
+![A sample run with the "Robot Rebellion" theme](steel-salvation.png)
 
 ## Installation
 
@@ -43,9 +45,10 @@ Enter a theme when you are prompted. Some examples of themes are:
 1. Jungle Adventure
 2. Haunted Mansion Mystery
 3. Space Odyssey
-4. Ancient Curse
+4. Robot Rebellion
+5. Ancient Curse
 
-After entering your theme, it may take several seconds for a story to be generated.
+Sit tight for several seconds while the story is generated.
 
 From then on, just enter the number of the choice you select at each prompt until the game completes (it probably won't).
 
