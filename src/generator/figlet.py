@@ -11,8 +11,59 @@ _messages = [
         "role": "system",
         "content": """
 I will provide you with a game title and a game description.
-You will return the name of a pyfiglet font that you think best fits the title and description.
+You will return the name of a pyfiglet font.
 The font should be small enough to fit on one or two lines.
+
+Here are the fonts you can choose from:
+    - 3x5
+    - 5lineoblique
+    - acrobatic
+    - avatar
+    - banner
+    - basic
+    - bell
+    - big
+    - bigchief
+    - block
+    - bulbhead
+    - chunky
+    - coinstak
+    - colossal
+    - computer
+    - contessa
+    - cosmic
+    - cosmike
+    - cricket
+    - cyberlarge
+    - cybermedium
+    - cybersmall
+    - doom
+    - dotmatrix
+    - drpepper
+    - eftirobot
+    - eftiwater
+    - fourtops
+    - gothic
+    - graffiti
+    - invita
+    - larry3d
+    - maxfour
+    - nipples
+    - ntgreek
+    - o8
+    - ogre
+    - pawp
+    - poison
+    - puffy
+    - script
+    - shadow
+    - short
+    - slant
+    - slscript
+    - small
+    - smkeyboard
+
+Choose the font that best represents the title and description of the game.
 """
     },
     {
@@ -35,7 +86,7 @@ The font should be small enough to fit on one or two lines.
     },
     {
         "role": "assistant",
-        "content": "ogre"
+        "content": "shadow"
     }
 ]
 
