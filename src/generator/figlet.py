@@ -75,7 +75,7 @@ Choose the font that best represents the title and description of the game.
         "content": "slant"},
     {
         "role": "user",
-        "content": "TITLE: Aria and the Sorcerer’s Curse DESCRIPTION: As the young adventurer Aria, journey through the enchanted forest to rescue your sister from a powerful sorcerer. Battle mythical creatures, solve challenging puzzles, and forge alliances in your quest to save your family and the enchanted forest itself."
+        "content": "TITLE: Aria and the Sorcerer's Curse DESCRIPTION: As the young adventurer Aria, journey through the enchanted forest to rescue your sister from a powerful sorcerer. Battle mythical creatures, solve challenging puzzles, and forge alliances in your quest to save your family and the enchanted forest itself."
     },
     {
         "role": "assistant",
