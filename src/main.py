@@ -1,7 +1,10 @@
 import logging
 
+import pyfiglet
 from generator.title import generate_title
+from generator.figlet import generate_figlet_font
 from generator.story import generate_story
+from generator.backstory import generate_backstory
 from generator.prompt import generate_prompt
 
 logging.basicConfig(
@@ -30,8 +33,24 @@ player = {
     "progress": 0,
 }
 
-prompt = generate_prompt(title, story_points, player)
+# Display the game title
+figlet_font = generate_figlet_font(title["TITLE"], title["TITLE DESCRIPTION"])
+try:
+    banner = pyfiglet.figlet_format(title["TITLE"], font=figlet_font)
+except pyfiglet.FontNotFound:
+    banner = pyfiglet.figlet_format(title["TITLE"])
+print()
+print(banner)
+print()
+print()
 
+# Display the game backstory
+backstory = generate_backstory({"title": title, "location": story_points[0]["location"]})
+print(backstory)
+print()
+
+# Start the game
+prompt = generate_prompt(title, story_points, player)
 while player["progress"] < len(story_points):
     logger.debug(prompt)
     print("=========================================")
