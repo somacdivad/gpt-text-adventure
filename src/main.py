@@ -4,6 +4,7 @@ import pyfiglet
 from generator.title import generate_title
 from generator.figlet import generate_figlet_font
 from generator.story import generate_story
+from generator.map import generate_map
 from generator.backstory import generate_backstory
 from generator.prompt import generate_prompt
 
@@ -25,6 +26,7 @@ title = generate_title(theme)
 logger.debug(title)
 story_points = generate_story(title)
 logger.debug(story_points)
+map = generate_map(story_points[0])
 
 player = {
     "health": 100,
@@ -45,7 +47,7 @@ print()
 print()
 
 # Display the game backstory
-backstory = generate_backstory({"title": title, "location": story_points[0]["location"]})
+backstory = generate_backstory({"title": title, "location": map["locations"][map["start"]]})
 print(backstory)
 print()
 
