@@ -56,12 +56,20 @@ Here are the fonts you can choose from:
     - poison
     - puffy
     - script
-    - shadow
     - short
     - slant
     - slscript
     - small
     - smkeyboard
+    - smscript
+    - smshadow
+    - starwars
+    - stellar
+    - thin
+    - threepoint
+    - tombstone
+    - trek
+    - weird
 
 Choose the font that best represents the title and description of the game.
 """
@@ -79,14 +87,14 @@ Choose the font that best represents the title and description of the game.
     },
     {
         "role": "assistant",
-        "content": "epic"},
+        "content": "smscript"},
     {
         "role": "user",
         "content": "TITLE: Whispers in the Shadows DESCRIPTION: As the skilled investigator Marlowe, delve into a world of secrets and intrigue in a city filled with corruption. Unravel a web of lies, use your cunning to outsmart your enemies, and uncover the truth behind a series of mysterious disappearances that threaten to destabilize the city."
     },
     {
         "role": "assistant",
-        "content": "shadow"
+        "content": "smshadow"
     }
 ]
 
