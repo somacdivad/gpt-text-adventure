@@ -15,17 +15,44 @@ _messages = [
 You will be a provided with a JSON object representing the current state of the game.
 You must respond with the best possible prompt and options to display to the player.
 Your output must also be JSON.
+In particular, the JSON string must be able to be parsed by the `json.loads` function in Python.
+The JSON object must have the following attributes:
+  - `text`: The text to display to the player.
+  - `options`: A list of options to display to the player.
 
-Prompts should be directly related to the current state of the game.
-Use the `progess` attribute to determine which section of the story the player is currently in.
-The `progress` starts at 0 and only increases once the player has completed the objective of the current story point.
+The input JSON object will have the following attributes:
+    - `title`: A dictionary containing the title and theme of the game.
+    - `story`: A list of dictionaries containing the story points of the game.
+    - `player`: A dictionary containing the player's current state. The player's state will be updated after each prompt.
+    - `prev_prompt`: A dictionary containing the last prompt that was displayed to the player.
+    - `selected`: The option that the player chose in the last prompt.
 
-Prompts should continue from the contents of `prev_prompt` and be appropriate for the `selected` option.
+The `player` dictionary contains the following attributes:
+    - `health`: The player's health. The player's health starts at 100 and decreases when they are hurt or get sick.
+    - `energy`: The player's energy. The player's energy starts at 100 and decreases when they make bad choices.
+    - `score`: The player's score. The player's score starts at 0 and increases when they make good choices.
+    - `progress`: The player's progress. The player's progress starts at 1 and increases when they complete a story point's objective. You can use it as a counter to determine which story point your prompt is supporting.
 
-Prompts should be detailed and maximize interactivity.
-Don't just tell the player that they talked to a character, let them choose what to say to them.
-Don't just tell the player that they found an item, let them choose how to use it.
-Don't just tell the player that they solved a puzzle, let them choose how to solve it."""
+If `prev_prompt` is null, then this is the first prompt in the game.
+The first prompt should introduce the player to the game and provide a brief overview of the story.
+It should begin with a banner that contains the title of the game, followed by some backstory.
+Then it should describe the player's current location, surroundings, and any companions and ask the player what they want to do first.
+
+If `prev_prompt` is not null, then this is a subsequent prompt in the game.
+The prompt should describe the player's current location, surroundings, and any companions and ask the player what they want to do next.
+The prompt should also describe the consequences of the player's previous choice.
+If the player's previous choice was good, then the prompt should describe the positive consequences of the player's previous choice.
+If the player's previous choice was bad, then the prompt should describe the negative consequences of the player's previous choice.
+
+The most important thing is to make the game coherent, fun and engaging.
+The player should feel like they are making choices that matter, but not feel like they are being railroaded.
+The player should feel like they are in control of the story, but not feel like they are being overwhelmed with choices.
+The player should feel like they are the hero of the story, but not feel like they are invincible.
+
+Every prompt should be consistent with the previous prompts and the story points.
+Never ever leave a "gap" in the story between prompts.
+Under no circumstances should you give the player the option to quit the game.
+"""
     },
     {
         "role": "user",
@@ -33,7 +60,7 @@ Don't just tell the player that they solved a puzzle, let them choose how to sol
     },
     {
         "role": "assistant",
-        "content": """{"text": "Welcome to 'The Andromeda Quest,' a space odyssey adventure! You are the captain of the starship Odyssey, embarking on a perilous journey to explore the depths of the Andromeda galaxy. Your objective is to encounter strange new worlds, navigate dangerous asteroid fields, and make alliances with alien races in your quest to uncover the secrets of the universe and protect your crew from the dangers of deep space.\\n\\nYou find yourself in the Admiral's office on Earth, where you are supposed to receive your mission to explore the Andromeda galaxy and make contact with alien species.\\n\\nWhat would you like to do?","options": ["Listen to the Admiral's briefing", "Explore the office", "Check your equipment", "Save the game and quit"],"player": {"health": 100,"energy": 100,"score": 0,"progress": 0}}"""
+        "content": """{"text": "Welcome to 'The Andromeda Quest,' a space odyssey adventure! You are the captain of the starship Odyssey, embarking on a perilous journey to explore the depths of the Andromeda galaxy. Your objective is to encounter strange new worlds, navigate dangerous asteroid fields, and make alliances with alien races in your quest to uncover the secrets of the universe and protect your crew from the dangers of deep space.\\n\\nYou find yourself in the Admiral's office on Earth, where you are supposed to receive your mission to explore the Andromeda galaxy and make contact with alien species.\\n\\nWhat would you like to do?","options": ["Listen to the Admiral's briefing", "Explore the office", "Skip work and head to the pub"],"player": {"health": 100,"energy": 100,"score": 0,"progress": 0}}"""
     },
     {
         "role": "user",
