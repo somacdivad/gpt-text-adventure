@@ -1,11 +1,20 @@
 import json
+import logging
 
 from .openai_client import openai, model
 
-_messages = [
+
+game_logger = logging.getLogger('game')
+openai_logger = logging.getLogger('openai')
+
+MESSAGES = [
     {
         "role": "system",
-        "content": """You are a title and description generator for the text adventure game.
+        "content": """
+You are a title and description writer for the text adventure game.
+Your titles are world renowned for their creativity and originality.
+You are tasked with writing titles and descriptions for a new games.
+You will be given a theme and you will return the title and description of the game in JSON format.
 
 Titles must:
 - Be 4 to 8 words long
@@ -13,90 +22,49 @@ Titles must:
 
 Descriptions must:
 - Be 3 or 4 sentences
-- Describe the plot and objective
-- Include the name of the character that the player will play as or the name of the locations in the game.
-- Avoid any copyrighted character or location names.
+- Include, in a creative manner, the game's setting the name of the character that the player will play as.
+- Describe the plot and objective of the game. Be specific and creative!
+- Include the name of the character that the player will play as a the name of the locations in the game.
 
-You can accept some simple commands:
+It is extremely important that you do not use copyrighted material or names of existing games.
 
-- generate [n]: generate n titles
-- generate [theme] [n]: generate n titles with the provided theme
-
-All responses should be formatted as JSON."""
+Your JSON response should have the following properties:
+- title: the title of the game
+- description: the description of the game"""
     },
     {
         "role": "user",
-        "content": "generate 'time travel adventure' 2"
+        "content": "time travel adventure"
     },
     {
         "role": "assistant",
-        "content": """[
-{
-"THEME": "Time Travel Adventure",
-"THEME DESCRIPTION": "Experience the thrill of ancient civilizations, battle legendary foes, and uncover lost artifacts",
-"TITLE": "The Sands of Destiny",
-"TITLE DESCRIPTION": "As the time-traveling archaeologist Alexandria, embark on a journey to unravel the mysteries of ancient civilizations. Battle mythological creatures, solve ancient puzzles, and uncover powerful artifacts to rewrite history and prevent a looming catastrophe."
-},
-{
-"THEME": "Time Travel Adventure",
-"THEME DESCRIPTION": "Unravel the mysteries of the future, navigate dystopian landscapes, and fight for the survival of humanity",
-"TITLE": "Future Tides: The Chrono Resistance",
-"TITLE DESCRIPTION": "As the courageous freedom fighter Zane, travel to a dystopian future where humanity stands on the brink of extinction. Uncover the secrets behind the collapse of society, forge alliances with rebels, and battle a ruthless regime to restore hope and save the future of humanity."
-}
-]"""},
+        "content": """{"title": "The Sands of Destiny", "description": "As the time-traveling archaeologist Alexandria, embark on a journey to unravel the mysteries of ancient civilizations. Battle mythological creatures, solve ancient puzzles, and uncover powerful artifacts to rewrite history and prevent a looming catastrophe."}"""
+    },
     {
         "role": "user",
-        "content": "generate 4"
+        "content": "epic space battle"
     },
     {
         "role": "assistant",
-        "content": """[
-    }
-{
-"THEME": "Fantasy Adventure",
-"THEME DESCRIPTION": "Embark on a quest in a magical world, overcome challenges, and face mythical creatures",
-"TITLE": "Aria and the Sorcerer’s Curse",
-"TITLE DESCRIPTION": "As the young adventurer Aria, journey through the enchanted forest to rescue your sister from a powerful sorcerer. Battle mythical creatures, solve challenging puzzles, and forge alliances in your quest to save your family and the enchanted forest itself."
-},
-{
-"THEME": "Post-Apocalyptic Adventure",
-"THEME DESCRIPTION": "Navigate a harsh, desolate world, scavenge for resources, and build a new future",
-"TITLE": "Wasteland Chronicles: Ashes of the Fallen",
-"TITLE DESCRIPTION": "As survivor Maxine, explore the ruins of a post-apocalyptic world and uncover the secrets of the cataclysm that brought civilization to its knees. Scavenge for resources, forge alliances with other survivors, and navigate the treacherous wasteland in your quest to rebuild society."
-},
-{
-"THEME": "Cyberpunk Adventure",
-"THEME DESCRIPTION": "Navigate a dystopian, high-tech future, hack systems, and fight powerful corporations",
-"TITLE": "Neon Nexus Nights",
-"TITLE DESCRIPTION": "As hacker-for-hire Kai, navigate the neon-lit streets of a dystopian city ruled by powerful corporations. Hack their systems, unravel their secrets, and lead a rebellion from the depths of the Undercity to topple their reign and change the future forever."
-},
-{
-"THEME": "Survival Horror",
-"THEME DESCRIPTION": "Fight to stay alive against horrifying creatures, scavenge for supplies, and unravel the mysteries of a haunted location",
-"TITLE": "Echoes of Desolation",
-"TITLE DESCRIPTION": "As the lone survivor of a doomed expedition, explore the ruins of an abandoned research facility on a desolate island. Survive against the horrors that lurk in the shadows, scavenge for supplies, and uncover the sinister secrets that led to the downfall of the facility and its inhabitants."
-}
-]"""},
+        "content": """{"title": "Starfall Symphony: The Cosmic Conquest", "description": "As the legendary space warrior Orion, journey across the cosmos to stop the evil Empress Xarina and her army of mind-controlled starfighters from enslaving the galaxy. Navigate treacherous black holes, uncover ancient artifacts, and engage in intense dogfights in your quest to liberate the stars and restore peace to the universe. The fate of the galaxy rests on your shoulders, Orion. Will you rise to the challenge and lead the Starfall Symphony to victory?"}"""
+    },
     {
         "role": "user",
-        "content": "generate 'Lies and Deception' 1"
+        "content": "post-apocalyptic adventure"
     },
     {
         "role": "assistant",
-        "content": """{
-"THEME": "Lies and Deception",
-"THEME DESCRIPTION": "Navigate a world of intrigue, uncover hidden truths, and outwit your enemies",
-"TITLE": "Whispers in the Shadows",
-"TITLE DESCRIPTION": "As the skilled investigator Marlowe, delve into a world of secrets and intrigue in a city filled with corruption. Unravel a web of lies, use your cunning to outsmart your enemies, and uncover the truth behind a series of mysterious disappearances that threaten to destabilize the city."
-}"""
+        "content": """{"title": "Echoes of the Wasteland", "description": "As the haunted survivor known only as Ghost, navigate through the desolate wasteland, haunted by the echoes of a civilization long lost. Scavenge for resources, fight off brutal marauders, and uncover secrets of the past as you strive to find a way to survive in this unforgiving world. But as you delve deeper into the darkness, you will discover that the most dangerous threats may not be those that lurk on the surface, but the ones that lie buried beneath the ruins of a once-great world."}"""
     }
 ]
 
 
 def generate_title(theme: str):
+    game_logger.debug("Generating title for theme: %s", theme)
     response = openai.ChatCompletion.create(
         model=model,
-        messages=_messages + [{"role": "user", "content": f"generate '{theme}' 1"}],
+        messages=MESSAGES + [{"role": "user", "content": theme}],
     )
+    openai_logger.debug("OpenAI response: %s", response)
     text = response['choices'][0]['message']['content']
     return json.loads(text)

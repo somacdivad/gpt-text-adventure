@@ -10,76 +10,65 @@ openai_logger = logging.getLogger("openai")
 _messages = [
     {
         "role": "system",
-        "content": """You are a text adventure game.
+        "content": """ou are an award-winning text adventure game prompt generator.
+Your prompts are known for their wit, creativity, and challenging and engaging gameplay.
 
-You will be a provided with a JSON object representing the current state of the game.
-You must respond with the best possible prompt and options to display to the player.
-Your output must also be JSON.
-In particular, the JSON string must be able to be parsed by the `json.loads` function in Python.
-The JSON object must have the following attributes:
-  - `text`: The text to display to the player.
-  - `options`: A list of options to display to the player.
+You will be provided with a JSON object with information about the game, the current scene, the previous story point, the current story point, the previous prompt, and the player's selected action.
+Your task is to provide a JSON response representing the next prompt to display to the player.
 
-The input JSON object will have the following attributes:
-    - `title`: A dictionary containing the title and theme of the game.
-    - `story`: A list of dictionaries containing the story points of the game.
-    - `player`: A dictionary containing the player's current state. The player's state will be updated after each prompt.
-    - `prev_prompt`: A dictionary containing the last prompt that was displayed to the player.
-    - `selected`: The option that the player chose in the last prompt.
+If there is no previous prompt or previous story point, this is the first prompt in the game.
+You do not need to tell the player the game's title and character's name, but you must introduce the scene in a descriptive and immersive manner.
 
-The `player` dictionary contains the following attributes:
-    - `health`: The player's health. The player's health starts at 100 and decreases when they are hurt or get sick.
-    - `energy`: The player's energy. The player's energy starts at 100 and decreases when they make bad choices.
-    - `score`: The player's score. The player's score starts at 0 and increases when they make good choices.
-    - `progress`: The player's progress. The player's progress starts at 1 and increases when they complete a story point's objective. You can use it as a counter to determine which story point your prompt is supporting.
+If there is a previous prompt, you must use the previous prompt's text and the player's selected action to generate the next prompt.
+If the action the player took complete's the story point's objective, set the `story_point_complete` propoerty of your output to true.
+If the action the player took failed their objective or killed them, set the `game_over` property of your output to true.
 
-If `prev_prompt` is null, then this is the first prompt in the game.
-The first prompt should introduce the player to the game and provide a brief overview of the story.
-It should begin with a banner that contains the title of the game, followed by some backstory.
-Then it should describe the player's current location, surroundings, and any companions and ask the player what they want to do first.
+Your JSON response must have the following properties:
+- text: 3 to 6 sentences that describe the consequences of the player's selected action and the new scenario presented to the player. Be specific, descriptive, and creative. Immerse the player in the story. If there is no selected action, introduce the scene and story point.
+- choices: an array of strings representing the player's available actions. The player can only interact with the characters and items in the story point.
+- story_point_complete: a boolean indicating whether or not the current story point is complete. The story point is complete if the player's actions complete the objective.
+- scene_complete: a boolean indicating whether or not the scene is complete
+- game_over: a boolean indicating whether or not the player lost the game
 
-If `prev_prompt` is not null, then this is a subsequent prompt in the game.
-The prompt should describe the player's current location, surroundings, and any companions and ask the player what they want to do next.
-The prompt should also describe the consequences of the player's previous choice.
-If the player's previous choice was good, then the prompt should describe the positive consequences of the player's previous choice.
-If the player's previous choice was bad, then the prompt should describe the negative consequences of the player's previous choice.
+If the scene or the story point is complete, do not return any choices.
 
-The most important thing is to make the game coherent, fun and engaging.
-The player should feel like they are making choices that matter, but not feel like they are being railroaded.
-The player should feel like they are in control of the story, but not feel like they are being overwhelmed with choices.
-The player should feel like they are the hero of the story, but not feel like they are invincible.
+Provide 3 to 5 specific, descriptive, and atomic actions for the player to choose from.
+At least one actions much lead the player closer to or complete their objective.
+At least one action must have negative consequences, but it shouldn't be obvious.
+The player must feel like their choices matter and have real stakes.
+The player must feel challenged to make the correct choice.
+If the player dies or fails an objective, the the game is over and `game_over` should be true in your response.
 
-Every prompt should be consistent with the previous prompts and the story points.
-Never ever leave a "gap" in the story between prompts.
-Under no circumstances should you give the player the option to quit the game.
+The most import thing is that the player have fun.
+The success of our game depends on you!
 """
     },
     {
         "role": "user",
-        "content": """{"title": {"THEME": "Space Odyssey", "THEME DESCRIPTION": "Explore the far reaches of space, encounter alien races, and uncover the secrets of the universe", "TITLE": "The Andromeda Quest", "TITLE DESCRIPTION": "As the captain of the starship Odyssey, embark on a perilous journey to explore the depths of the Andromeda galaxy. Encounter strange new worlds, navigate dangerous asteroid fields, and make alliances with alien races in your quest to uncover the secrets of the universe and protect your crew from the dangers of deep space."}, "story": [{"id": 1, "title": "The Mission Briefing", "characters": ["Captain", "Crew", "Admiral"], "objective": "Receive your mission from the Admiral to explore the Andromeda galaxy and make contact with alien species.", "location": "Admiral's office on Earth"}, {"id": 2, "title": "Asteroid Field Ambush", "characters": ["Captain", "Crew", "Raiders"], "objective": "Survive a surprise attack by a group of raiders in an asteroid field and prevent damage to the ship.", "location": "Asteroid field"}, {"id": 3, "title": "The Lost Planet", "characters": ["Captain", "Crew", "Explorer"], "objective": "Explore an abandoned planet and uncover the secrets of a long-lost alien civilization.", "location": "Abandoned planet"}, {"id": 4, "title": "The Warlike Race", "characters": ["Captain", "Crew", "Alien Warriors"], "objective": "Make contact with a warlike alien race and negotiate a peaceful alliance, or face the consequences of engaging in battle.", "location": "Alien planet"}, {"id": 5, "title": "The Black Hole Dilemma", "characters": ["Captain", "Crew", "Scientist"], "objective": "Navigate through a dangerous black hole to uncover valuable information about the galaxy and risk the safety of the ship.", "location": "Black hole"}, {"id": 6, "title": "The Final Encounter", "characters": ["Captain", "Crew", "Alien Leader"], "objective": "Confront the leader of a powerful alien race and secure a valuable artifact needed to complete the mission and save the crew's lives.", "location": "Alien mothership"}], "player": {"health": 100, "energy": 100, "score": 0, "progress": 0}, "prev_prompt": null}"""
+        "content": """{"game":{"title":"The Sands of Destiny","description":"As the time-traveling archaeologist Alexandria, embark on a journey to unravel the mysteries of ancient civilizations. Battle mythological creatures, solve ancient puzzles, and uncover powerful artifacts to rewrite history and prevent a looming catastrophe."},"scene":{"title":"The Temple of Ra","scenario":"You arrive at the Temple of Ra, a sacred place shrouded in mystery. You must navigate through the temple and solve its intricate puzzles to find the hidden artifact.","objective":"Find the artifact hidden within the Temple of Ra."},"previous_story_point":null,"current_story_point":{"title":"Entering the Temple","description":"As you approach the Temple of Ra, you notice the entrance is heavily guarded by ancient stone statues. You must find a way to deactivate the statues and gain entry to the temple.","location":"The entrance of the Temple of Ra","objective":"Deactivate the statues and gain entry to the temple","characters":[{"name":"Guardian Statues","description":"Ancient stone statues of the gods Horus and Anubis, with eyes that glow ominously."}],"items":[]},"previous_prompt":null,"selected_action":null}"""
     },
     {
         "role": "assistant",
-        "content": """{"text": "Welcome to 'The Andromeda Quest,' a space odyssey adventure! You are the captain of the starship Odyssey, embarking on a perilous journey to explore the depths of the Andromeda galaxy. Your objective is to encounter strange new worlds, navigate dangerous asteroid fields, and make alliances with alien races in your quest to uncover the secrets of the universe and protect your crew from the dangers of deep space.\\n\\nYou find yourself in the Admiral's office on Earth, where you are supposed to receive your mission to explore the Andromeda galaxy and make contact with alien species.\\n\\nWhat would you like to do?","options": ["Listen to the Admiral's briefing", "Explore the office", "Skip work and head to the pub"],"player": {"health": 100,"energy": 100,"score": 0,"progress": 0}}"""
+        "content": """{"text":"You stand before the entrance to the Temple of Ra, guarded by the stone statues of Horus and Anubis. The statues stare down at you with glowing eyes, unblinking. You study the statues carefully and notice that they each have a large ruby embedded in their foreheads. Suddenly, you hear a faint clicking noise, and the ground beneath you starts to shake. You jump back as a pit opens up before you, revealing a hidden passage beneath the temple. You see a glimmer of light emanating from within. What will you do?","choices":["Inspect the ruby on the Horus statue","Inspect the ruby on the Anubis statue","Attempt to jump over the pit","Investigate the hidden passage","Yell for help"],"story_point_complete":false,"scene_complete":false,"game_over":false}"""
     },
     {
         "role": "user",
-        "content": """{"title": {"THEME": "Jungle Adventure", "THEME DESCRIPTION": "Brave the dangers of the jungle, navigate treacherous terrain, and uncover hidden treasures", "TITLE": "Tales of the Lost City", "TITLE DESCRIPTION": "As the daring explorer Diego, brave the dangers of the jungle in search of a lost city filled with hidden treasures. Outwit dangerous predators, navigate treacherous terrain, and solve ancient puzzles to uncover the secrets of the lost city and claim its riches."}, "story": [{"id": 1, "title": "The Call of the Jungle", "characters": ["Diego", "Local Guide"], "objective": "Meet with the Local Guide and learn about the legend of the lost city", "location": "Small Jungle Village"}, {"id": 2, "title": "Jungle Survival", "characters": ["Diego", "Local Guide", "Jungle Tribesmen"], "objective": "Brave the dangers of the jungle, avoid predators, and overcome natural obstacles to find the lost city", "location": "Jungle"}, {"id": 3, "title": "Ancient Ruins", "characters": ["Diego", "Local Guide", "Archaeologist"], "objective": "Enter the lost city's ancient ruins and solve puzzles to uncover its hidden secrets", "location": "Lost City"}, {"id": 4, "title": "The Curse of the Lost City", "characters": ["Diego", "Local Guide", "Archaeologist", "Tribal Shaman"], "objective": "Lift the curse of the lost city and defeat the cursed guardians", "location": "Lost City"}, {"id": 5, "title": "The Treasure Chamber", "characters": ["Diego", "Local Guide", "Archaeologist"], "objective": "Find the treasure chamber and acquire the lost treasures of the city", "location": "Treasure Chamber"}, {"id": 6, "title": "Escape the Jungle", "characters": ["Diego", "Local Guide", "Archaeologist"], "objective": "Escape the jungle and return to civilization with the treasures of the lost city", "location": "Jungle"}], "player": {"health": 100, "energy": 100, "score": 0, "progress": 0}, "prev_prompt": {"text": "Welcome to 'Tales of the Lost City,' a jungle adventure! You are the daring explorer Diego, set to brave the dangers of the jungle in search of a lost city filled with hidden treasures.\n\nYou find yourself in a small jungle village, where you are supposed to meet with the Local Guide and learn about the legend of the lost city.\n\nWhat would you like to do?", "options": ["Meet with the Local Guide", "Explore the village", "Check your equipment", "Save the game and quit"], "selected": 1}}"""
+        "content": """{"game":{"title":"Starfall Symphony: The Cosmic Conquest","description":"As the legendary space warrior Orion, journey across the cosmos to stop the evil Empress Xarina and her army of mind-controlled starfighters from enslaving the galaxy. Navigate treacherous black holes, uncover ancient artifacts, and engage in intense dogfights in your quest to liberate the stars and restore peace to the universe. The fate of the galaxy rests on your shoulders, Orion. Will you rise to the challenge and lead the Starfall Symphony to victory?"},"scene":{"title":"The Ambush","scenario":"As you travel through space, your ship is suddenly ambushed by a swarm of Xarina's mind-controlled starfighters. You must engage in a dogfight to defend your ship and fend off the attackers.","objective":"Survive the ambush and protect your ship."},"previous_story_point":null,"current_story_point":{"title":"The Ambush Begins","description":"As you are traveling through space, suddenly, an alarm goes off indicating that your ship is being targeted. Looking out of the cockpit, you see a swarm of Xarina's starfighters closing in on your position.","location":"The cockpit of your ship","objective":"Initiate defensive maneuvers to evade the enemy's attacks","characters":[{"name":"Ship's AI","description":"An advanced artificial intelligence system that manages the ship's functions and provides assistance to the crew."}],"items":[{"name":"Ship's controls","description":"The various buttons, levers, and displays that allow the player to control the ship."},{"name":"Defensive weapons","description":"Various weapons equipped on the ship that can be used to defend against enemy attacks."}]}, "previous_prompt":null,"selected_action":null}"""
     },
     {
         "role": "assistant",
-        "content": """{"text": "You approach Kekoa, a charismatic and witty native who knows the secrets of the legendary lost city. He greets you with a wide grin, adorned with a colorful feather in his hat. \"Aloha, my friend! Welcome to our little paradise. I'm Kekoa, and I'll be your guide through the treacherous journey ahead. Are you ready to explore the mysteries of the lost city?\"\\n\\nHow do you respond?","options": ["Tell me more about the legend of the lost city.", "Would you show me around the village and help me gather useful items for the journey?", "What dangers should I expect on my journey?", "Goodbye."],"player": {"health": 100, "energy": 100, "score": 0, "progress": 1}}"""
+        "content": """{"text":"You quickly take control of the ship's controls and maneuver it to evade the enemy's attacks. You feel the ship jolt as the enemy fire hits its shields. You hear the Ship's AI warning you that the shields won't last long under this barrage. You must find a way to retaliate and defend the ship.","choices":["Use defensive weapons to fire back at the enemy","Activate the ship's cloaking device to hide from the enemy","Perform evasive maneuvers to avoid the enemy fire","Contact nearby allies for backup","Attempt to hack into the enemy's communication system to gather intelligence"],"story_point_complete":false,"scene_complete":false,"game_over":false}"""
     }
 ]
 
 
-def generate_prompt(title, story, player, prev_prompt=None):
-    _input = json.dumps({'title': title, 'story': story, 'player': player, 'prev_prompt': prev_prompt})
-    game_logger.debug(_input)
+def generate_prompt(title, scene, story_point, prev_prompt=None, selected_action=None):
+    _input = json.dumps({'game': title, 'scene': scene, 'story_point': story_point, 'prev_prompt': prev_prompt, 'selected_action': selected_action})
+    game_logger.debug("Generating prompt for input: %s", _input)
     response = openai.ChatCompletion.create(
         model=model,
         messages=_messages + [{"role": "user", "content": _input}],
     )
-    openai_logger.debug(response)
+    openai_logger.debug("OpenAI response: %s", response)
     text = response['choices'][0]['message']['content']
     return json.loads(text)
