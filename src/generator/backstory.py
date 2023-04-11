@@ -19,7 +19,12 @@ The backstory must:
 - Describe how the hero came to be in the starting location of the game.
 - Provide any other relevant background information for the game
 - Be written in an artistic and enigmatic way.
-- Be 300-500 characters long."""
+- Be 300-500 characters long.
+
+The backstory must not:
+- Contain any copyrighted characters or locations.
+- Contain any spoilers for the game.
+"""
     },
     {
         "role": "user",

@@ -15,23 +15,38 @@ _messages = [
 You will be a provided with a JSON object representing the current state of the game.
 You must respond with the best possible prompt and options to display to the player.
 Your output must also be JSON.
-In particular, the JSON string must be able to be parsed by the `json.loads` function in Python.
-The JSON object must have the following attributes:
+
+The JSON output object must have the following attributes:
   - `text`: The text to display to the player.
   - `options`: A list of options to display to the player.
 
 The input JSON object will have the following attributes:
     - `title`: A dictionary containing the title and theme of the game.
-    - `story`: A list of dictionaries containing the story points of the game.
+    - `story_point`: A dictionary containing the current story point and its objective.
+    - `map`: A dictionary containing the current map and its locations.
     - `player`: A dictionary containing the player's current state. The player's state will be updated after each prompt.
     - `prev_prompt`: A dictionary containing the last prompt that was displayed to the player.
     - `selected`: The option that the player chose in the last prompt.
+
+The `map` dictionary contains the following attributes:
+    - `start`: The index of the starting location.
+    - `locations`: An array of location dictionaries representing locations on the map that the player can travel to.
+    - `end`: The index of the location whose objective completes the current story point
+    - `completed`: A boolean indicating whether the player has completed the current story point.
+
+Each `location` dictionary contains the following attributes:
+    - `name`: The name of the location.
+    - `description`: A description of the location.
+    - `items`: A list of items that the player can interact with in the location.
+    - `characters`: A list of characters that the player can interact with in the location.
+    - `objective`: A description of the objective that the player must complete in the location.
+    - `exists`: A list if location indices that the player can travel to from the current location.
+    - `completed`: A boolean indicating whether the player has completed the objective in the location.
 
 The `player` dictionary contains the following attributes:
     - `health`: The player's health. The player's health starts at 100 and decreases when they are hurt or get sick.
     - `energy`: The player's energy. The player's energy starts at 100 and decreases when they make bad choices.
     - `score`: The player's score. The player's score starts at 0 and increases when they make good choices.
-    - `progress`: The player's progress. The player's progress starts at 1 and increases when they complete a story point's objective. You can use it as a counter to determine which story point your prompt is supporting.
 
 If `prev_prompt` is null, then this is the first prompt in the game.
 The first prompt should introduce the player to the game and provide a brief overview of the story.
@@ -39,8 +54,8 @@ It should begin with a banner that contains the title of the game, followed by s
 Then it should describe the player's current location, surroundings, and any companions and ask the player what they want to do first.
 
 If `prev_prompt` is not null, then this is a subsequent prompt in the game.
-The prompt should describe the player's current location, surroundings, and any companions and ask the player what they want to do next.
-The prompt should also describe the consequences of the player's previous choice.
+The prompt must describe the consequences of the player's previous choice.
+The prompt must also describe the player's current location and the items and characters that the player can interact with and ask the player what they want to do next.
 If the player's previous choice was good, then the prompt should describe the positive consequences of the player's previous choice.
 If the player's previous choice was bad, then the prompt should describe the negative consequences of the player's previous choice.
 
@@ -50,7 +65,9 @@ The player should feel like they are in control of the story, but not feel like 
 The player should feel like they are the hero of the story, but not feel like they are invincible.
 
 Every prompt should be consistent with the previous prompts and the story points.
-Never ever leave a "gap" in the story between prompts.
+Every prompt except the first one should begin by describing the consequences of the player's previous choice.
+Dialogue should be interactive.
+The player should be able to ask questions and receive answers.
 Under no circumstances should you give the player the option to quit the game.
 """
     },
@@ -73,8 +90,8 @@ Under no circumstances should you give the player the option to quit the game.
 ]
 
 
-def generate_prompt(title, story, player, prev_prompt=None):
-    _input = json.dumps({'title': title, 'story': story, 'player': player, 'prev_prompt': prev_prompt})
+def generate_prompt(title: dict, map: dict, player: dict, prev_prompt=dict | None):
+    _input = json.dumps({'title': title, 'map': map, 'player': player, 'prev_prompt': prev_prompt})
     game_logger.debug(_input)
     response = openai.ChatCompletion.create(
         model=model,
